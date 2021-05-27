@@ -2,6 +2,7 @@
 //
 
 #include <iostream>
+#include "XXX.h"
 
 int main()
 {
