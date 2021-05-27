@@ -6,7 +6,18 @@
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    auto* sim = DvfSimulator::Create();
+
+    auto ob = sim->GetOrderBook();
+
+    // ... decide price and amount
+
+    auto order = sim->PlaceOrder(0.5, 0.6);
+
+    if (order)
+        sim->CancelOrder(order.value());
+
+    return true;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
