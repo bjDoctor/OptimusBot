@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+OptimusBot/Debug/
+
+OptimusBot/.vs/
+
+*.user
