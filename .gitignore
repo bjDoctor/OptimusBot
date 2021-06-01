@@ -31,10 +31,12 @@
 *.out
 *.app
 
-OptimusBot/Debug/
+**/Debug/
 
-OptimusBot/.vs/
+**/Release/
+
+**/.vs/
 
 *.user
 
-OptimusBot/XXX.h
+src/OptimusBot/XXX.h

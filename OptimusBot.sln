@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31320.298
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OptimusBot", "OptimusBot.vcxproj", "{8029EEAF-284F-4197-A04B-9FF34B534654}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OptimusBot", "src/OptimusBot/OptimusBot.vcxproj", "{8029EEAF-284F-4197-A04B-9FF34B534654}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{957CC4A2-0C16-490B-9A00-885665BA8BA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +26,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8029EEAF-284F-4197-A04B-9FF34B534654} = {957CC4A2-0C16-490B-9A00-885665BA8BA6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B41FD309-9FA9-48E2-A5BE-F36E360917E8}
