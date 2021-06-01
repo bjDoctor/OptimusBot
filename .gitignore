@@ -40,3 +40,5 @@
 *.user
 
 src/OptimusBot/XXX.h
+
+packages/
