@@ -1,12 +1,14 @@
 #pragma once
 
 #include <functional>
+#include <algorithm>
 
 #include "XXX.h"
 #include "Bot.h"
 
 using namespace OptimusBot::Bot;
 
+/// @brief Grouping of static utilities, implemented as pure functions if possible, used throughout this app
 namespace OptimusBot::Utilities
 {
 	/// @brief Random number generator within a given range
@@ -21,6 +23,7 @@ namespace OptimusBot::Utilities
 		const auto rnd = min + static_cast <double> (rand()) / (static_cast <double> (RAND_MAX / (max - min)));
 
 		return static_cast<double>(static_cast<int>(rnd * 10.)) / 10.;
+		//return static_cast<int>(rnd);
 	}
 
 	/// @brief Places bid/ask orders, by delegating the work to a lambda, using a "prudent" strategy, ensuring that we have enough assets to cover all orders
@@ -29,14 +32,14 @@ namespace OptimusBot::Utilities
 	/// @param numberOfOrders Number of bid or ask orders. In total, twice that number can be created, one bid and one ask per iteration
 	/// @param placeOrder Lambda, delegating the responsability of calling the relevent API to place the order
 	/// @return A vector of placed orders. If, for any reason, an order cannot be placed, it will not appear in the output.
-	std::vector<Order> PlacePrudentOrders(const Wallet& wallet, const BestOrder& bestOrder, int numberOfOrders, const std::function<std::optional<IDvfSimulator::OrderID>(double, double)>& placeOrder)
+	std::vector<Order> PlacePrudentOrders(const Wallet& wallet, const BestOrder& bestOrder, int numberOfOrders, const std::function<std::optional<IDvfSimulator::OrderID>(double, double)>& placeOrder) noexcept
 	{
 		if (numberOfOrders < 1)
 			return {};
 
 		std::vector<Order> orders;
 
-		// This model the prudent approach, ensureing that the sum of all the orders
+		// This model the prudent approach, ensuring that the sum of all the orders
 		// does not exceed the current assets hold
 		const auto maxVolumePerOrder = wallet.ETH / numberOfOrders;
 
@@ -60,5 +63,23 @@ namespace OptimusBot::Utilities
 		}
 
 		return orders;
+	}
+
+	/// @brief Extracts the best bid/ask pair from an order book
+	/// @param orderBook Order book, as returned by IDvfSimulator::GetOrderBook
+	/// @return An optional best bid/ask pair
+	std::optional<BestOrder> ExtractBestOrder(const IDvfSimulator::OrderBook& orderBook) noexcept
+	{
+		auto sortedOrderBook = orderBook;
+		std::sort(sortedOrderBook.begin(), sortedOrderBook.end());
+
+		const auto size = sortedOrderBook.size();
+
+		for (auto i = 0; i < size - 1; i++)
+			if (sortedOrderBook[i].second > 0 && sortedOrderBook[i + 1].second < 0)
+				return BestOrder{ sortedOrderBook[i].first, sortedOrderBook[i + 1].first };
+
+		//failed to retrieve the best order
+		return {};
 	}
 }

@@ -92,5 +92,33 @@ namespace UtilitiesTests
 				EXPECT_TRUE(bestAsk <= order.Price && order.Price <= 1.05*bestAsk);
 		}
 	}
+
+	TEST(ExtractBestOrder, GetsTheBestBidAskPairFromSortedOrderBook)
+	{
+		// Arrange 
+		std::vector<std::pair<double, double>> orderBook{ {1.0, 1.0}, {2.0, 1.0}, {3.0, 1.0}, {4.0, -1.0}, {5.0, -1.0}, {6.0, -1.0} };
+
+		// Act
+		const auto result = ExtractBestOrder(orderBook);
+
+		// Assert
+		ASSERT_TRUE(result);
+		EXPECT_EQ(3.0, result.value().Bid);
+		EXPECT_EQ(4.0, result.value().Ask);
+	}
+
+	TEST(ExtractBestOrder, GetsTheBestBidAskPairFromUnsortedOrderBook)
+	{
+		// Arrange 
+		std::vector<std::pair<double, double>> orderBook{ {2.0, 1.0}, {3.0, 1.0}, {1.0, 1.0}, {5.0, -1.0}, {6.0, -1.0}, {4.0, -1.0} };
+
+		// Act
+		const auto result = ExtractBestOrder(orderBook);
+
+		// Assert
+		ASSERT_TRUE(result);
+		EXPECT_EQ(3.0, result.value().Bid);
+		EXPECT_EQ(4.0, result.value().Ask);
+	}
 }
 
