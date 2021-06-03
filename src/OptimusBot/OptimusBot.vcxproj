@@ -148,7 +148,7 @@
   <ItemGroup>
     <ClInclude Include="Bot.h" />
     <ClInclude Include="Utilities.h" />
-    <ClInclude Include="XXX.h" />
+    <ClInclude Include="DvfSimulator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
