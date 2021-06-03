@@ -11,7 +11,7 @@ COPY . /usr/src/optimusbot
 WORKDIR /usr/src/optimusbot
 
 # This command compiles your app using GCC, adjust for your source code
-RUN g++ -o optimusbot src/OptimusBot/main.cpp
+RUN g++ -o optimusbot src/OptimusBot/Utilities.cpp src/OptimusBot/Bot.cpp src/OptimusBot/main.cpp
 
 # This command runs your application, comment out this line to compile only
 CMD ["./optimusbot"]
