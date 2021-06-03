@@ -33,4 +33,4 @@ jobs:
       
     - name: Test (64bit Release)
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: \x64\Release\OptimusBot.Tests.exe
+      run: .\x64\Release\OptimusBot.Tests.exe
