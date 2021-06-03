@@ -28,12 +28,11 @@ int main()
     // Creates the simulator
     auto* sim = DvfSimulator::Create();
 
-    //Initial Wallet, wuth 10 ETH and 2000 USD
-    Wallet initialWallet(10.0, 2000.0);
+    //Initial Wallet, with 10 ETH and 2000 USD
+    Wallet wallet(10.0, 2000.0);
 
     //Initial order book
     const auto initialOrderBook = sim->GetOrderBook();    
-    PrintOrders(initialOrderBook);
 
     //Initial best bid/ask pair
     auto initialBestOrder = ExtractBestOrder(initialOrderBook);
@@ -47,14 +46,15 @@ int main()
     auto placeOrderDelegate = [&sim](double price, double amount) {
         return sim->PlaceOrder(price, amount);
     };
-    auto placedOrders = PlacePrudentOrders(initialWallet, initialBestOrder.value(), 5, placeOrderDelegate);
+    auto pendingOrders = PlacePrudentOrders(wallet, initialBestOrder.value(), 5, placeOrderDelegate);
 
     using namespace std::chrono_literals;
     auto now = std::chrono::system_clock::now();
     auto nextMarketRefresh = now + 5s;
     auto nextAssetBalances = now + 30s;
-    //outer loop, refresh the market state every 5 seconds
-    while (true) 
+
+    //outer loop, refresh the market state every 5 seconds & print asserts every 30s
+    while (!pendingOrders.empty()) 
     {
         now = std::chrono::system_clock::now();
 
@@ -62,32 +62,45 @@ int main()
         {
             nextMarketRefresh = now + 5s;
             auto orderBook = sim->GetOrderBook();
-            std::cout << "Refreshing order book at " << now.time_since_epoch().count() << std::endl;
+            //std::cout << "Refreshing order book at " << now.time_since_epoch().count() << std::endl;
             //PrintOrders(orderBook);
             auto bestOrder = ExtractBestOrder(orderBook).value();
-            std::cout << "The order book's best bid/ask pair is: " << bestOrder.Bid << "/" << bestOrder.Ask << std::endl;
+            //std::cout << "The order book's best bid/ask pair is: " << bestOrder.Bid << "/" << bestOrder.Ask << std::endl;
+
+            const auto filledOrders = EraseFilledOrders(pendingOrders, bestOrder);
+
+            UpdateWallet(wallet, filledOrders);
+
+            if (now > nextAssetBalances)
+            {
+                nextAssetBalances = now + 30s;
+                //std::cout << "Print asset balances..." << std::endl;
+                //PrintOrders(placedOrders);
+                std::cout << "Wallet composed of " << wallet.ETH << " ETH and " << wallet.USD << " USD" << std::endl;
+                std::cout << "Remaining pending orders: " << std::endl;
+                for (const auto& order : pendingOrders)
+                {
+                    std::cout << "\t" << " @ " << order.Price
+                        << " : " << order.Volume
+                        << " " << (order.Side == OrderSide::BID ? "BID" : "ASK")
+                        << " (Id: " << order.OrderId << ")"
+                        << std::endl;
+                }
+            }
         }
 
-        if (now > nextAssetBalances)
-        {
-            nextAssetBalances = now + 30s;
-            std::cout << "Print asset balances..." << std::endl;
-        }
+        
     }
 
-    //PrintOrders();
+    if (pendingOrders.empty())
+        std::cout << "All pending orders have been filled. Gracefuly losing trading session." << std::endl;
+    else
+    {
+        std::cout << "Something went wrong... Cancelling remaining pending orders and closing trading session." << std::endl;
+        for (const auto& order : pendingOrders)
+            sim->CancelOrder(order.OrderId); //TODO: handle failure here?
+    }
 
 
     return true;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

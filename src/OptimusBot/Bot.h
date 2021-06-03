@@ -4,14 +4,14 @@
 
 namespace OptimusBot::Bot
 {
-	//Immutable object representing the ETH-USD assets currently hold
+	//Mutable object representing the ETH-USD currently hold
 	struct Wallet
 	{
 		Wallet (double eth, double usd) : ETH{ eth }, USD{ usd }
 		{}
 
-		const double ETH;
-		const double USD;
+		double ETH;
+		double USD;
 	};
 
 	//Immutable object representing the current best bid/ask pair of the order book
@@ -31,9 +31,9 @@ namespace OptimusBot::Bot
 	};
 
 	//Immutable object representing an order placed by the bot
-	struct Order
+	struct BotOrder
 	{
-		Order(OrderSide side, IDvfSimulator::OrderID orderId, double price, double volume)
+		BotOrder(OrderSide side, IDvfSimulator::OrderID orderId, double price, double volume)
 			: Side{side}, OrderId{orderId}, Price{price}, Volume{volume}
 		{}
 
@@ -41,5 +41,11 @@ namespace OptimusBot::Bot
 		const IDvfSimulator::OrderID OrderId;
 		const double Price;
 		const double Volume;
+
+		//Operator required to ensure BotOrders  can be sorted in a set/map
+		bool operator < (const BotOrder& other) const noexcept
+		{
+			return Price < other.Price;
+		}
 	};
 }

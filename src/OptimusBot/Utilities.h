@@ -31,13 +31,13 @@ namespace OptimusBot::Utilities
 	/// @param bestOrder Current best bid/ask pair
 	/// @param numberOfOrders Number of bid or ask orders. In total, twice that number can be created, one bid and one ask per iteration
 	/// @param placeOrder Lambda, delegating the responsability of calling the relevent API to place the order
-	/// @return A vector of placed orders. If, for any reason, an order cannot be placed, it will not appear in the output.
-	std::vector<Order> PlacePrudentOrders(const Wallet& wallet, const BestOrder& bestOrder, int numberOfOrders, const std::function<std::optional<IDvfSimulator::OrderID>(double, double)>& placeOrder) noexcept
+	/// @return A multiset of placed orders. If, for any reason, an order cannot be placed, it will not appear in the output.
+	std::multiset<BotOrder> PlacePrudentOrders(const Wallet& wallet, const BestOrder& bestOrder, int numberOfOrders, const std::function<std::optional<IDvfSimulator::OrderID>(double, double)>& placeOrder) noexcept
 	{
 		if (numberOfOrders < 1)
 			return {};
 
-		std::vector<Order> orders;
+		std::multiset<BotOrder> orders;
 
 		// This model the prudent approach, ensuring that the sum of all the orders
 		// does not exceed the current assets hold
@@ -50,7 +50,7 @@ namespace OptimusBot::Utilities
 				const auto bidVolume = RandomWithSingleDecimalPoint(0.1, maxVolumePerOrder);
 				const auto bidOrderId = placeOrder(bidPrice, bidVolume);
 				if (bidOrderId)
-					orders.push_back(Order{ OrderSide::BID, bidOrderId.value(), bidPrice, bidVolume });
+					orders.emplace( OrderSide::BID, bidOrderId.value(), bidPrice, bidVolume );
 			}
 
 			{
@@ -58,7 +58,7 @@ namespace OptimusBot::Utilities
 				const auto askVolume = RandomWithSingleDecimalPoint(0.1, maxVolumePerOrder);
 				const auto askOrderId = placeOrder(askPrice, -askVolume);
 				if (askOrderId)
-					orders.push_back(Order{ OrderSide::ASK, askOrderId.value(), askPrice, askVolume });
+					orders.emplace( OrderSide::ASK, askOrderId.value(), askPrice, askVolume );
 			}
 		}
 
@@ -81,5 +81,48 @@ namespace OptimusBot::Utilities
 
 		//failed to retrieve the best order
 		return {};
+	}
+
+	/// @brief Erases the orders that have been filled. This is a non-pure function modifying the input orders
+	/// @param orders Bot orders, passed by reference
+	/// @param bestOrder Pair of current best bis/ask
+	/// @return A multiset of the filled orders (i.e. the ones that have been removed from the input orders)
+	std::multiset<BotOrder> EraseFilledOrders(std::multiset<BotOrder>& orders, const BestOrder& bestOrder)
+	{
+		std::multiset<BotOrder> filledOrders;
+		const auto copiedOrders = orders; //copy input to allow erasing orders while iterating
+
+		for (const auto& order : copiedOrders)
+		{
+			if (order.Side == OrderSide::BID && order.Price > bestOrder.Bid
+				|| order.Side == OrderSide::ASK && order.Price < bestOrder.Ask)
+			{
+				filledOrders.insert(order);
+				orders.erase(order);
+			}
+		}
+
+		return filledOrders;
+	}
+
+
+	/// @brief Updates the wallet to reflect the changes of the filled orders on the assets hold. This is a non-pure function modifying the wallet object
+	/// @param wallet Wallet to update
+	/// @param filledOrders Filled orders to process
+	void UpdateWallet(Wallet& wallet, std::multiset<BotOrder> filledOrders)
+	{
+		for (const auto& order : filledOrders)
+		{
+			if (order.Side == OrderSide::BID)
+			{
+				wallet.ETH += order.Volume;
+				wallet.USD -= order.Volume * order.Price;
+			}
+			else if (order.Side == OrderSide::ASK)
+			{
+				wallet.ETH -= order.Volume;
+				wallet.USD += order.Volume * order.Price;
+			}
+		}
 	}
 }
