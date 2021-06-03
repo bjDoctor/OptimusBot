@@ -16,3 +16,9 @@ The tests can be run using VS's test explorer, or by executing `.\OptimusBot.Tes
 A Dockerfile is also available, which enables the bot to run on any platform.
 To build the docker image run the command `docker build -t optimusbot -f .\Dockerfile .` from the solution directory.
 To run the app in a container, execute: `docker run optimusbot`
+
+Unfortunately, I did not spend the time to investigate how the tests could be run inside a docker container...
+
+## GitHub Actions
+
+A GitHub Action pipeline, which builds the app using MSBuild and runs the tests, has also been setup for this repo.
