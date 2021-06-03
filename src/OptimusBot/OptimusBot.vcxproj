@@ -146,7 +146,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Bot.h" />
+    <ClInclude Include="Types.h" />
     <ClInclude Include="Utilities.h" />
     <ClInclude Include="DvfSimulator.h" />
   </ItemGroup>

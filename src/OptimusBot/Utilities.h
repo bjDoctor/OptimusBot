@@ -4,9 +4,9 @@
 #include <algorithm>
 
 #include "DvfSimulator.h"
-#include "Bot.h"
+#include "Types.h"
 
-using namespace OptimusBot::Bot;
+using namespace OptimusBot::Types;
 
 /// @brief Grouping of static utilities, implemented as pure functions if possible, used throughout this app
 namespace OptimusBot::Utilities
@@ -87,7 +87,7 @@ namespace OptimusBot::Utilities
 	/// @param orders Bot orders, passed by reference
 	/// @param bestOrder Pair of current best bis/ask
 	/// @return A multiset of the filled orders (i.e. the ones that have been removed from the input orders)
-	std::multiset<BotOrder> EraseFilledOrders(std::multiset<BotOrder>& orders, const BestOrder& bestOrder)
+	std::multiset<BotOrder> EraseFilledOrders(std::multiset<BotOrder>& orders, const BestOrder& bestOrder) noexcept
 	{
 		std::multiset<BotOrder> filledOrders;
 		const auto copiedOrders = orders; //copy input to allow erasing orders while iterating
@@ -109,7 +109,7 @@ namespace OptimusBot::Utilities
 	/// @brief Updates the wallet to reflect the changes of the filled orders on the assets hold. This is a non-pure function modifying the wallet object
 	/// @param wallet Wallet to update
 	/// @param filledOrders Filled orders to process
-	void UpdateWallet(Wallet& wallet, std::multiset<BotOrder> filledOrders)
+	void UpdateWallet(Wallet& wallet, std::multiset<BotOrder> filledOrders) noexcept
 	{
 		for (const auto& order : filledOrders)
 		{

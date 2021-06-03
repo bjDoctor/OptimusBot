@@ -2,11 +2,14 @@
 
 #include <optional>
 
-namespace OptimusBot::Bot
+/// @brief Grouping of type definitions for small/simple objects used throughout this application
+namespace OptimusBot::Types
 {
 	//Mutable object representing the ETH-USD currently hold
 	struct Wallet
 	{
+		Wallet() = default;
+
 		Wallet (double eth, double usd) : ETH{ eth }, USD{ usd }
 		{}
 
