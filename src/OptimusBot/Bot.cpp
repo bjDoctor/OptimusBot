@@ -82,7 +82,6 @@ void OptimusBot::Bot::StartTradingSession()
 
             if (now > nextAssetBalances)
             {
-                return;
                 nextAssetBalances = now + assetBalancesInterval;
                 PrintAssets(m_Wallet, m_PendingOrders);
             }
