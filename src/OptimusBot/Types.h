@@ -27,6 +27,7 @@ namespace OptimusBot::Types
 		const double Ask;
 	};
 
+	//Side of an order placed by the bot
 	enum class OrderSide 
 	{
 		BID,
@@ -45,7 +46,7 @@ namespace OptimusBot::Types
 		const double Price;
 		const double Volume;
 
-		//Operator required to ensure BotOrders  can be sorted in a set/map
+		//Operator required to ensure BotOrders can be sorted in a set/map
 		bool operator < (const BotOrder& other) const noexcept
 		{
 			return Price < other.Price;

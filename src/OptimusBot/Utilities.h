@@ -4,16 +4,14 @@
 #include "DvfSimulator.h"
 #include "Types.h"
 
-
-
 /// @brief Grouping of static utilities, implemented as pure functions if possible, used throughout this app
 namespace OptimusBot::Utilities
 {
-	/// @brief Random number generator within a given range
+	/// @brief Random number generator within a given range (but always greater than zero)
 	/// @param min Lower bound
 	/// @param max Upper bound
-	/// @return A random number with a single decimal point
-	double RandomWithSingleDecimalPoint(double min, double max) noexcept;
+	/// @return A positive random number with a single decimal point
+	double Random(double min, double max) noexcept;
 
 	/// @brief Places bid/ask orders, by delegating the work to a lambda, using a "prudent" strategy, ensuring that we have enough assets to cover all orders
 	/// @param wallet Assets currently hold
@@ -24,7 +22,7 @@ namespace OptimusBot::Utilities
 	std::multiset<Types::BotOrder> PlacePrudentOrders(const Types::Wallet& wallet, const Types::BestOrder& bestOrder, int numberOfOrders, const std::function<std::optional<IDvfSimulator::OrderID>(double, double)>& placeOrder) noexcept;
 
 	/// @brief Extracts the best bid/ask pair from an order book
-	/// @param orderBook Order book, as returned by IDvfSimulator::GetOrderBook
+	/// @param orderBook Order book, as returned by the market simulator
 	/// @return An optional best bid/ask pair
 	std::optional<Types::BestOrder> ExtractBestOrder(const IDvfSimulator::OrderBook& orderBook) noexcept;
 
@@ -35,7 +33,7 @@ namespace OptimusBot::Utilities
 	std::multiset<Types::BotOrder> EraseFilledOrders(std::multiset<Types::BotOrder>& orders, const Types::BestOrder& bestOrder) noexcept;
 
 
-	/// @brief Updates the wallet to reflect the changes of the filled orders on the assets hold. This is a non-pure function modifying the wallet object
+	/// @brief Updates the wallet to reflect the changes of the filled orders on the assets hold. This is a non-pure function modifying the wallet input
 	/// @param wallet Wallet to update
 	/// @param filledOrders Filled orders to process
 	void UpdateWallet(Types::Wallet& wallet, std::multiset<Types::BotOrder> filledOrders) noexcept;

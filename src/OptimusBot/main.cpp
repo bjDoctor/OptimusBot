@@ -19,11 +19,11 @@ int main()
     if (!initialOrderPlaced)
     {
         std::cout << "Failed to place inital orders, closing the application..." << std::endl;
-        return false;
+        return 0;
     }
 
     // Start trading!
     bot.StartTradingSession();
 
-    return true;
+    return 1;
 }

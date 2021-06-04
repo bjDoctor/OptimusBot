@@ -3,7 +3,7 @@
 
 using namespace OptimusBot::Types;
 
-double OptimusBot::Utilities::RandomWithSingleDecimalPoint(double min, double max) noexcept
+double OptimusBot::Utilities::Random(double min, double max) noexcept
 {
 	if (min < 0 || max - min < 1)
 		return 0.0;
@@ -28,16 +28,16 @@ std::multiset<BotOrder> OptimusBot::Utilities::PlacePrudentOrders(const Wallet& 
 	for (int i = 0; i < numberOfOrders; i++)
 	{
 		{
-			const auto bidPrice = RandomWithSingleDecimalPoint(0.95 * bestOrder.Bid, bestOrder.Bid);
-			const auto bidVolume = RandomWithSingleDecimalPoint(0.1, maxVolumePerOrder);
+			const auto bidPrice = Random(0.95 * bestOrder.Bid, bestOrder.Bid);
+			const auto bidVolume = Random(0.1, maxVolumePerOrder);
 			const auto bidOrderId = placeOrder(bidPrice, bidVolume);
 			if (bidOrderId)
 				orders.emplace(OrderSide::BID, bidOrderId.value(), bidPrice, bidVolume);
 		}
 
 		{
-			const auto askPrice = RandomWithSingleDecimalPoint(bestOrder.Ask, 1.05 * bestOrder.Ask);
-			const auto askVolume = RandomWithSingleDecimalPoint(0.1, maxVolumePerOrder);
+			const auto askPrice = Random(bestOrder.Ask, 1.05 * bestOrder.Ask);
+			const auto askVolume = Random(0.1, maxVolumePerOrder);
 			const auto askOrderId = placeOrder(askPrice, -askVolume);
 			if (askOrderId)
 				orders.emplace(OrderSide::ASK, askOrderId.value(), askPrice, askVolume);

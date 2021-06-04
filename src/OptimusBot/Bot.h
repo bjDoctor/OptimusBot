@@ -1,14 +1,12 @@
 #pragma once
 
-#include <chrono>
-#include <iostream>
 #include <memory>
 #include "DvfSimulator.h"
 #include "Types.h"
 
 namespace OptimusBot 
 {
-    /// @brief Active object responsible for periodically the simulated market and keeping track of the assets hold
+    /// @brief Active object responsible for periodically polling the simulated market and keeping track of the assets hold
     class Bot final
     {
     public:
