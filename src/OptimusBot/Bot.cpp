@@ -6,6 +6,27 @@ using namespace OptimusBot::Utilities;
 using namespace OptimusBot::Types;
 
 
+namespace 
+{
+    void PrintAssets(const Wallet& wallet, const std::multiset<BotOrder>& pendingOrders)
+    {
+        std::cout << "\tWallet composed of " << wallet.ETH << " ETH and " << wallet.USD << " USD" << std::endl;
+
+        if (!pendingOrders.empty())
+        {
+            std::cout << "\tRemaining pending orders: " << std::endl;
+            for (const auto& order : pendingOrders)
+            {
+                std::cout << "\t\t" << " @ " << order.Price
+                    << " : " << order.Volume
+                    << " " << (order.Side == OrderSide::BID ? "BID" : "ASK")
+                    << " (Id: " << order.OrderId << ")"
+                    << std::endl;
+            }
+        }
+    }
+}
+
 bool OptimusBot::Bot::PlaceInitialOrders(int numberOfOrdersEachSide)
 {
     //Initial order book
@@ -63,20 +84,12 @@ void OptimusBot::Bot::StartTradingSession()
             {
                 return;
                 nextAssetBalances = now + assetBalancesInterval;
-
-                std::cout << "\tWallet composed of " << m_Wallet.ETH << " ETH and " << m_Wallet.USD << " USD" << std::endl;
-                std::cout << "\tRemaining pending orders: " << std::endl;
-                for (const auto& order : m_PendingOrders)
-                {
-                    std::cout << "\t\t" << " @ " << order.Price
-                        << " : " << order.Volume
-                        << " " << (order.Side == OrderSide::BID ? "BID" : "ASK")
-                        << " (Id: " << order.OrderId << ")"
-                        << std::endl;
-                }
+                PrintAssets(m_Wallet, m_PendingOrders);
             }
         }
     }
+
+    PrintAssets(m_Wallet, m_PendingOrders);
 
     if (m_PendingOrders.empty())
         std::cout << "All pending orders have been filled. Gracefuly losing trading session." << std::endl;
