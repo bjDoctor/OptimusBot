@@ -91,7 +91,7 @@ void OptimusBot::Bot::StartTradingSession()
     PrintAssets(m_Wallet, m_PendingOrders);
 
     if (m_PendingOrders.empty())
-        std::cout << "All pending orders have been filled. Gracefuly losing trading session." << std::endl;
+        std::cout << "All pending orders have been filled! Gracefully closing trading session." << std::endl;
     else
     {
         std::cout << "Something went wrong... Cancelling remaining pending orders and closing trading session." << std::endl;
